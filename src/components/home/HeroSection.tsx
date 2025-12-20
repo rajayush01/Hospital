@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
-import { Search, ArrowRight } from 'lucide-react';
-import video from '../../assets/hosp.mp4';
+// import { Search, ArrowRight } from 'lucide-react';
+// import video from '../../assets/hosp.mp4';
 import BookingModal from '../ui/BookingModal';
+import img from '../../assets/home.webp';
 
 const HeroSection = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  // const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
 
-  const actionButtons = [
-    { label: 'Book Appointment', icon: ArrowRight, action: () => setIsModalOpen(true) },
-    { label: 'Find Hospital', icon: ArrowRight, action: () => console.log('Find Hospital') },
-    { label: 'Book Health Check', icon: ArrowRight, action: () => console.log('Book Health Check') },
-    { label: 'Get Expert Opinion', icon: ArrowRight, action: () => console.log('Get Expert Opinion') }
-  ];
+  // const actionButtons = [
+  //   { label: 'Book Appointment', icon: ArrowRight, action: () => setIsModalOpen(true) },
+  //   { label: 'Find Hospital', icon: ArrowRight, action: () => console.log('Find Hospital') },
+  //   { label: 'Book Health Check', icon: ArrowRight, action: () => console.log('Book Health Check') },
+  //   { label: 'Get Expert Opinion', icon: ArrowRight, action: () => console.log('Get Expert Opinion') }
+  // ];
 
   return (
     <>
@@ -22,7 +23,7 @@ const HeroSection = () => {
       <div className="absolute inset-0">
                   <div className="w-full h-full bg-gradient-to-br from-blue-400 to-cyan-400">
 
-        <video
+        {/* <video
           autoPlay
           loop
           muted
@@ -30,7 +31,8 @@ const HeroSection = () => {
           className="w-full h-full object-cover"
         >
           <source src={video} type="video/mp4" />
-        </video>
+        </video> */}
+        <img src={img} alt="" className='w-[1600px] h-[1000px]'/>
         </div>
         
         {/* Themed Overlay - Light Blue to White gradient */}
@@ -61,7 +63,7 @@ const HeroSection = () => {
             </p>
 
             {/* Search Bar - Responsive sizing */}
-            <div className="relative max-w-3xl mx-auto mb-8 sm:mb-12">
+            {/* <div className="relative max-w-3xl mx-auto mb-8 sm:mb-12">
               <input
                 type="text"
                 value={searchQuery}
@@ -72,10 +74,10 @@ const HeroSection = () => {
               <button className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 transition rounded-full p-3 sm:p-4 shadow-lg">
                 <Search size={20} className="text-white sm:w-6 sm:h-6" />
               </button>
-            </div>
+            </div> */}
 
             {/* Action Buttons - Responsive grid layout */}
-            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+            {/* <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
               {actionButtons.map((button, index) => (
                 <button
                   key={index}
@@ -91,7 +93,7 @@ const HeroSection = () => {
                   />
                 </button>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
 

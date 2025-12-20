@@ -24,7 +24,7 @@ const navigate = useNavigate();
           {/* Left Nav */}
           <div className="flex items-center gap-6 flex-1 justify-end pr-8">
             <NavItem label="DISCOVER JK" />
-            <NavItem label="FIND HOSPITAL" />
+            <NavItem label="BOOK APPOINTMENT" />
           </div>
 
           {/* Center Logo */}
@@ -39,7 +39,7 @@ const navigate = useNavigate();
           {/* Right Nav */}
           <div className="flex items-center gap-6 flex-1 justify-start pl-8">
             <NavItem label="MEDICAL SERVICES" />
-            <NavItem label="HEALTH LIBRARY" />
+            <NavItem label="CONTACT US" />
           </div>
         </div>
 

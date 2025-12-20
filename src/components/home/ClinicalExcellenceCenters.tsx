@@ -12,46 +12,46 @@ interface Specialty {
 const specialties: Specialty[] = [
   {
     id: 'cardiac',
-    name: 'Cardiac Sciences',
+    name: 'ENT (EAR, NOSE, THROAT)',
     description: "Our Cardiac Sciences department is at the forefront of cardiac care, offering a comprehensive range of services from advanced diagnostics and minimally invasive procedures to complex surgeries and rehabilitation programs.",
     image: 'https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=800&h=600&fit=crop',
     procedures: ['HEART TRANSPLANT', 'ANGIOPLASTY', 'CARDIAC SURGERY']
   },
   {
     id: 'oncology',
-    name: 'Oncology',
+    name: 'Gynecology and Obstetrics',
     description: "Our Oncology department provides cutting-edge cancer care with advanced treatment options, personalized care plans, and comprehensive support throughout the treatment journey.",
     image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800&h=600&fit=crop',
     procedures: ['CANCER TREATMENT', 'RADIATION THERAPY', 'CHEMOTHERAPY']
   },
   {
     id: 'neurosciences',
-    name: 'Neurosciences',
+    name: 'General Medicine',
     description: "Leading the way in neurological care, our Neurosciences center offers advanced diagnostics, surgical interventions, and rehabilitative services for complex neurological conditions.",
     image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop',
     procedures: ['BRAIN SURGERY', 'SPINE SURGERY', 'NEUROLOGY']
   },
-  {
-    id: 'gastroenterology',
-    name: 'Gastroenterology',
-    description: "Our Gastroenterology department specializes in digestive system disorders, offering state-of-the-art diagnostic and therapeutic procedures with expert clinical care.",
-    image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800&h=600&fit=crop',
-    procedures: ['LIVER TRANSPLANT', 'ENDOSCOPY', 'COLONOSCOPY']
-  },
-  {
-    id: 'orthopaedics',
-    name: 'Orthopaedics',
-    description: "Experience world-class orthopaedic care with our specialized team providing joint replacements, sports medicine, and comprehensive rehabilitation services.",
-    image: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=800&h=600&fit=crop',
-    procedures: ['JOINT REPLACEMENT', 'ARTHROSCOPY', 'SPORTS MEDICINE']
-  },
-  {
-    id: 'transplants',
-    name: 'Transplants',
-    description: "Our Transplants center is a pioneer in organ transplantation, offering kidney, liver, heart, and other organ transplants with exceptional success rates.",
-    image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=800&h=600&fit=crop',
-    procedures: ['ORGAN TRANSPLANT', 'BONE MARROW', 'KIDNEY TRANSPLANT']
-  }
+  // {
+  //   id: 'gastroenterology',
+  //   name: 'Gastroenterology',
+  //   description: "Our Gastroenterology department specializes in digestive system disorders, offering state-of-the-art diagnostic and therapeutic procedures with expert clinical care.",
+  //   image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800&h=600&fit=crop',
+  //   procedures: ['LIVER TRANSPLANT', 'ENDOSCOPY', 'COLONOSCOPY']
+  // },
+  // {
+  //   id: 'orthopaedics',
+  //   name: 'Orthopaedics',
+  //   description: "Experience world-class orthopaedic care with our specialized team providing joint replacements, sports medicine, and comprehensive rehabilitation services.",
+  //   image: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=800&h=600&fit=crop',
+  //   procedures: ['JOINT REPLACEMENT', 'ARTHROSCOPY', 'SPORTS MEDICINE']
+  // },
+  // {
+  //   id: 'transplants',
+  //   name: 'Transplants',
+  //   description: "Our Transplants center is a pioneer in organ transplantation, offering kidney, liver, heart, and other organ transplants with exceptional success rates.",
+  //   image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=800&h=600&fit=crop',
+  //   procedures: ['ORGAN TRANSPLANT', 'BONE MARROW', 'KIDNEY TRANSPLANT']
+  // }
 ];
 
 const ClinicalExcellenceCenters = () => {
@@ -164,13 +164,13 @@ const ClinicalExcellenceCenters = () => {
           {/* Navigation Arrows */}
           <button
             onClick={handlePrevious}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 text-white flex items-center justify-center hover:from-blue-500 hover:to-cyan-500 transition-all shadow-xl z-10"
+            className="absolute left-2 sm:left-1 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 md:w-10 md:h-10 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 text-white flex items-center justify-center hover:from-blue-500 hover:to-cyan-500 transition-all shadow-xl z-10"
           >
             <ChevronLeft size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white flex items-center justify-center hover:from-blue-600 hover:to-cyan-600 transition-all shadow-xl z-10"
+            className="absolute right-2 sm:right-1 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 md:w-10 md:h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white flex items-center justify-center hover:from-blue-600 hover:to-cyan-600 transition-all shadow-xl z-10"
           >
             <ChevronRight size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
           </button>

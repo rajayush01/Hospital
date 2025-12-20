@@ -84,7 +84,7 @@ const DoctorsShowcase = () => {
                   <img
                     src={doctor.image}
                     alt={doctor.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                   />
                   {/* <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-white/90 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg">
                     <span className="text-yellow-500 text-base sm:text-lg font-bold">★ {doctor.rating}</span>
