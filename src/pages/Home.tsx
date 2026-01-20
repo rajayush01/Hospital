@@ -4,7 +4,7 @@ import FAQSection from '@/components/home/FAQSection'
 import FloatingSidebar from '@/components/home/FloatingSidebar'
 import HeroSection from '@/components/home/HeroSection'
 import SupportServices from '@/components/home/SupportServices'
-import VideoTestimonials from '@/components/home/VideoTestimonials'
+import VideoTestimonials from '@/components/home/TextTestimonials'
 
 const Home = () => {
   return (

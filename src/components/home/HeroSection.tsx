@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // import { Search, ArrowRight } from 'lucide-react';
 // import video from '../../assets/hosp.mp4';
 import BookingModal from '../ui/BookingModal';
-import img from '../../assets/home.webp';
+import img from '../../assets/home3.jpg';
 
 const HeroSection = () => {
   // const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +32,7 @@ const HeroSection = () => {
         >
           <source src={video} type="video/mp4" />
         </video> */}
-        <img src={img} alt="" className='w-[1600px] h-[1000px]'/>
+        <img src={img} alt="" className='w-[1600px]'/>
         </div>
         
         {/* Themed Overlay - Light Blue to White gradient */}
