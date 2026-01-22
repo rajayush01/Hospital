@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { X, Search, Filter, Clock, MapPin, ChevronRight } from "lucide-react";
+import { X, Search, Filter, Clock, MapPin, ChevronRight, AlertCircle } from "lucide-react";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -51,6 +51,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [phoneError, setPhoneError] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [alertPopup, setAlertPopup] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   const [formData, setFormData] = useState<FormData>({
     department: "",
     doctor: "",
@@ -62,6 +63,14 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
   });
 
   const today = new Date().toISOString().split("T")[0];
+
+  const showAlert = (message: string) => {
+    setAlertPopup({ show: true, message });
+  };
+
+  const closeAlert = () => {
+    setAlertPopup({ show: false, message: "" });
+  };
 
   const isDoctorAvailableToday = (doctor: Doctor) => {
     const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
@@ -177,7 +186,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
 
   const handleContinueFromDoctorSelect = () => {
     if (!formData.doctor) {
-      alert("Please select a doctor");
+      showAlert("Please select a doctor");
       return;
     }
     setStep(2);
@@ -208,11 +217,11 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
       !formData.patientName ||
       !formData.phone
     ) {
-      alert("Please fill all required fields");
+      showAlert("Please fill all required fields");
       return;
     }
     if (formData.phone.length !== 10) {
-      alert("Please enter a valid 10-digit phone number");
+      showAlert("Please enter a valid 10-digit phone number");
       return;
     }
 
@@ -235,16 +244,34 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
       if (res.success) {
         setShowSuccessPopup(true);
       } else {
-        alert(res.error || "Booking failed");
+        showAlert(res.error || "Booking failed");
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong");
+      showAlert("Something went wrong");
     }
   };
 
   return (
     <>
+      {alertPopup.show && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-orange-600" />
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Attention</h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">{alertPopup.message}</p>
+            <button
+              onClick={closeAlert}
+              className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition w-full text-sm sm:text-base"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
       {showSuccessPopup && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
