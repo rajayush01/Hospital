@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { X, Search, Filter, Clock, MapPin, ChevronRight } from "lucide-react";
+import {
+  X,
+  Search,
+  Filter,
+  Clock,
+  MapPin,
+  ChevronRight,
+  AlertCircle,
+  XCircle,
+} from "lucide-react";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -54,6 +63,9 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
   const [phoneError, setPhoneError] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [isLeaveDay, setIsLeaveDay] = useState(false);
+  const [showDoctorAlert, setShowDoctorAlert] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [formData, setFormData] = useState<FormData>({
     department: "",
@@ -213,7 +225,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
 
   const handleContinueFromDoctorSelect = () => {
     if (!formData.doctor) {
-      alert("Please select a doctor");
+      setShowDoctorAlert(true);
       return;
     }
     setStep(2);
@@ -244,11 +256,13 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
       !formData.patientName ||
       !formData.phone
     ) {
-      alert("Please fill all required fields");
+      setErrorMessage("Please fill all required fields");
+      setShowErrorAlert(true);
       return;
     }
     if (formData.phone.length !== 10) {
-      alert("Please enter a valid 10-digit phone number");
+      setErrorMessage("Please enter a valid 10-digit phone number");
+      setShowErrorAlert(true);
       return;
     }
 
@@ -271,16 +285,61 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
       if (res.success) {
         setShowSuccessPopup(true);
       } else {
-        alert(res.error || "Booking failed");
+        setErrorMessage(res.error || "Booking failed");
+        setShowErrorAlert(true);
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong");
+      setErrorMessage("Something went wrong. Please try again.");
+      setShowErrorAlert(true);
     }
   };
-
   return (
     <>
+      {showDoctorAlert && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" />
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              Select a Doctor
+            </h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
+              Please choose a doctor from the list to continue with your
+              booking.
+            </p>
+            <button
+              onClick={() => setShowDoctorAlert(false)}
+              className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition w-full text-sm sm:text-base"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showErrorAlert && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <XCircle className="w-8 h-8 sm:w-10 sm:h-10 text-red-600" />
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              Oops!
+            </h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
+              {errorMessage}
+            </p>
+            <button
+              onClick={() => setShowErrorAlert(false)}
+              className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition w-full text-sm sm:text-base"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       {showSuccessPopup && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
@@ -531,28 +590,28 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                   />
                 </div>
 
-                  {isLeaveDay && (
-      <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-300 text-yellow-700 text-sm">
-        Doctor is on leave on this day.
-        {nextAvailableDate && (
-          <div className="mt-1">
-            Next available date:{" "}
-            <button
-              className="underline font-medium"
-              onClick={() =>
-                setFormData({
-                  ...formData,
-                  date: nextAvailableDate,
-                  slot: "",
-                })
-              }
-            >
-              {nextAvailableDate}
-            </button>
-          </div>
-        )}
-      </div>
-    )}
+                {isLeaveDay && (
+                  <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-300 text-yellow-700 text-sm">
+                    Doctor is on leave on this day.
+                    {nextAvailableDate && (
+                      <div className="mt-1">
+                        Next available date:{" "}
+                        <button
+                          className="underline font-medium"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              date: nextAvailableDate,
+                              slot: "",
+                            })
+                          }
+                        >
+                          {nextAvailableDate}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
@@ -587,7 +646,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
       isLeaveDay
         ? "bg-yellow-50 text-yellow-600 border-yellow-400 cursor-not-allowed"
         : isBooked
-          ? "bg-red-50 text-red-400 border-red-300 cursor-not-allowed"
+          ? "bg-red-100 text-red-600 border-red-400 cursor-not-allowed"
           : isSelected
             ? "bg-blue-600 text-white border-blue-600"
             : isAvailable
@@ -605,11 +664,13 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                               )}
 
                               {!isLeaveDay && isBooked && (
-                                <div className="text-[10px] mt-1">Booked</div>
+                                <div className="text-[10px] mt-1 font-semibold">Booked</div>
                               )}
                             </button>
                           );
                         })}
+
+
                       </div>
                     ) : (
                       <div className="text-center py-6 sm:py-8 bg-gray-50 rounded-lg">
