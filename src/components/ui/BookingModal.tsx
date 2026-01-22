@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  X,
-  Search,
-  Filter,
-  Clock,
-  MapPin,
-  ChevronRight,
-  AlertCircle,
-  XCircle,
-} from "lucide-react";
+import { X, Search, Filter, Clock, MapPin, ChevronRight } from "lucide-react";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -55,18 +46,11 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [allSlots, setAllSlots] = useState<Slot[]>([]);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
-  const [nextAvailableDate, setNextAvailableDate] = useState<string | null>(
-    null,
-  );
+  const [nextAvailableDate, setNextAvailableDate] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [phoneError, setPhoneError] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [isLeaveDay, setIsLeaveDay] = useState(false);
-  const [showDoctorAlert, setShowDoctorAlert] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
   const [formData, setFormData] = useState<FormData>({
     department: "",
     doctor: "",
@@ -80,41 +64,28 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
   const today = new Date().toISOString().split("T")[0];
 
   const isDoctorAvailableToday = (doctor: Doctor) => {
-    const todayName = new Date()
-      .toLocaleDateString("en-US", { weekday: "long" })
-      .toLowerCase();
+    const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     return doctor.schedule?.[todayName]?.length > 0;
   };
 
   const getNextAvailableDate = (doctor: Doctor) => {
-    const days = [
-      "sunday",
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-    ];
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const today = new Date();
     for (let i = 1; i <= 14; i++) {
       const checkDate = new Date(today);
       checkDate.setDate(today.getDate() + i);
       const dayName = days[checkDate.getDay()];
       if (doctor.schedule?.[dayName]?.length > 0) {
-        return checkDate.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        });
+        return checkDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
     }
     return null;
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
       maximumFractionDigits: 0,
     }).format(amount);
   };
@@ -142,16 +113,14 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
     let filtered = doctors;
     if (selectedDepartment !== "all") {
       filtered = filtered.filter(
-        (doc) => doc.departmentId._id === selectedDepartment,
+        (doc) => doc.departmentId._id === selectedDepartment
       );
     }
     if (searchQuery) {
       filtered = filtered.filter(
         (doc) =>
           doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          doc.departmentId.name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()),
+          doc.departmentId.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     setFilteredDoctors(filtered);
@@ -160,37 +129,20 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (!formData.doctor || !formData.date || !formData.doctorDetails) return;
 
-    const dayName = new Date(formData.date)
-      .toLocaleDateString("en-US", { weekday: "long" })
-      .toLowerCase();
-
+    const dayName = new Date(formData.date).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     const schedule = formData.doctorDetails.schedule?.[dayName] || [];
 
     fetch(`${API_URL}/slots?doctorId=${formData.doctor}&date=${formData.date}`)
       .then((res) => res.json())
       .then((data) => {
-        const available = data.availableSlots || [];
-
-        // ✅ NEW: detect leave day
-        setIsLeaveDay(!!data.isLeave);
-
-        setSlots(available);
-        setAllSlots(schedule);
+        setSlots(data.availableSlots || []);
         setNextAvailableDate(data.nextAvailableDate || null);
-
-        // ✅ ONLY calculate booked slots if NOT leave day
-        if (!data.isLeave) {
-          const availableStarts = available.map((s: Slot) => s.start);
-
-          const booked = schedule
-            .filter((s: Slot) => !availableStarts.includes(s.start))
-            .map((s: Slot) => s.start);
-
-          setBookedSlots(booked);
-        } else {
-          // 🟡 On leave → nothing is booked
-          setBookedSlots([]);
-        }
+        setAllSlots(schedule);
+        const availableStarts = (data.availableSlots || []).map((s: Slot) => s.start);
+        const booked = schedule
+          .filter((s: Slot) => !availableStarts.includes(s.start))
+          .map((s: Slot) => s.start);
+        setBookedSlots(booked);
       })
       .catch(console.error);
   }, [formData.doctor, formData.date, formData.doctorDetails]);
@@ -225,14 +177,14 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
 
   const handleContinueFromDoctorSelect = () => {
     if (!formData.doctor) {
-      setShowDoctorAlert(true);
+      alert("Please select a doctor");
       return;
     }
     setStep(2);
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     if (name === "phone") {
@@ -256,13 +208,11 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
       !formData.patientName ||
       !formData.phone
     ) {
-      setErrorMessage("Please fill all required fields");
-      setShowErrorAlert(true);
+      alert("Please fill all required fields");
       return;
     }
     if (formData.phone.length !== 10) {
-      setErrorMessage("Please enter a valid 10-digit phone number");
-      setShowErrorAlert(true);
+      alert("Please enter a valid 10-digit phone number");
       return;
     }
 
@@ -285,85 +235,26 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
       if (res.success) {
         setShowSuccessPopup(true);
       } else {
-        setErrorMessage(res.error || "Booking failed");
-        setShowErrorAlert(true);
+        alert(res.error || "Booking failed");
       }
     } catch (err) {
       console.error(err);
-      setErrorMessage("Something went wrong. Please try again.");
-      setShowErrorAlert(true);
+      alert("Something went wrong");
     }
   };
+
   return (
     <>
-      {showDoctorAlert && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" />
-            </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-              Select a Doctor
-            </h3>
-            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
-              Please choose a doctor from the list to continue with your
-              booking.
-            </p>
-            <button
-              onClick={() => setShowDoctorAlert(false)}
-              className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition w-full text-sm sm:text-base"
-            >
-              Got it
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showErrorAlert && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <XCircle className="w-8 h-8 sm:w-10 sm:h-10 text-red-600" />
-            </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-              Oops!
-            </h3>
-            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
-              {errorMessage}
-            </p>
-            <button
-              onClick={() => setShowErrorAlert(false)}
-              className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition w-full text-sm sm:text-base"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
       {showSuccessPopup && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <svg
-                className="w-8 h-8 sm:w-10 sm:h-10 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
+              <svg className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-              Booking Confirmed!
-            </h3>
-            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
-              Your appointment has been successfully booked.
-            </p>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">Your appointment has been successfully booked.</p>
             <button
               onClick={() => {
                 setShowSuccessPopup(false);
@@ -388,16 +279,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                   {step === 3 && "Patient Details"}
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                  {step === 1 &&
-                    "Choose from our experienced medical professionals"}
+                  {step === 1 && "Choose from our experienced medical professionals"}
                   {step === 2 && "Pick your preferred appointment slot"}
                   {step === 3 && "Enter patient information"}
                 </p>
               </div>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition p-1"
-              >
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition p-1">
                 <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
@@ -408,9 +295,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                   <div className="flex flex-col items-center">
                     <div
                       className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm transition ${
-                        step >= s
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-300 text-gray-600"
+                        step >= s ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-600"
                       }`}
                     >
                       {s}
@@ -421,9 +306,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                   </div>
                   {s < 3 && (
                     <div className="flex-1 mx-1 sm:mx-2">
-                      <div
-                        className={`h-1 rounded transition ${step > s ? "bg-blue-600" : "bg-gray-300"}`}
-                      />
+                      <div className={`h-1 rounded transition ${step > s ? "bg-blue-600" : "bg-gray-300"}`} />
                     </div>
                   )}
                 </React.Fragment>
@@ -466,25 +349,19 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                 <div className="space-y-3 sm:space-y-4">
                   {filteredDoctors.length === 0 ? (
                     <div className="text-center py-8 sm:py-12 text-gray-500">
-                      <p className="text-sm sm:text-base">
-                        No doctors found matching your criteria
-                      </p>
+                      <p className="text-sm sm:text-base">No doctors found matching your criteria</p>
                     </div>
                   ) : (
                     filteredDoctors.map((doctor) => {
                       const isAvailableToday = isDoctorAvailableToday(doctor);
-                      const nextDate = !isAvailableToday
-                        ? getNextAvailableDate(doctor)
-                        : null;
+                      const nextDate = !isAvailableToday ? getNextAvailableDate(doctor) : null;
                       const isSelected = formData.doctor === doctor._id;
                       return (
                         <div
                           key={doctor._id}
                           onClick={() => handleDoctorSelect(doctor)}
                           className={`flex flex-col sm:flex-row items-start sm:items-center p-3 sm:p-4 border-2 rounded-xl cursor-pointer transition hover:shadow-lg ${
-                            isSelected
-                              ? "border-blue-500 bg-blue-50"
-                              : "border-gray-200 hover:border-blue-300"
+                            isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-blue-300"
                           }`}
                         >
                           <div className="relative flex-shrink-0 mb-3 sm:mb-0">
@@ -505,12 +382,8 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                           </div>
 
                           <div className="flex-1 sm:ml-4 w-full">
-                            <h3 className="font-semibold text-base sm:text-lg text-gray-900">
-                              {doctor.name}
-                            </h3>
-                            <p className="text-xs sm:text-sm text-gray-600">
-                              {doctor.departmentId.name}
-                            </p>
+                            <h3 className="font-semibold text-base sm:text-lg text-gray-900">{doctor.name}</h3>
+                            <p className="text-xs sm:text-sm text-gray-600">{doctor.departmentId.name}</p>
                             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2">
                               <div className="flex items-center text-xs sm:text-sm">
                                 <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 mr-1" />
@@ -518,9 +391,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                                   {isAvailableToday ? "Available" : "Available"}
                                 </span>
                                 <span className="text-gray-600 ml-1">
-                                  {isAvailableToday
-                                    ? "Today"
-                                    : nextDate || "Soon"}
+                                  {isAvailableToday ? "Today" : nextDate || "Soon"}
                                 </span>
                               </div>
                               <div className="flex items-center text-xs sm:text-sm text-gray-600">
@@ -535,24 +406,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                               <div className="text-base sm:text-lg font-bold text-gray-900">
                                 {formatCurrency(doctor.consultationFee || 0)}
                               </div>
-                              <div className="text-[10px] sm:text-xs text-gray-500">
-                                Consultation Fee
-                              </div>
+                              <div className="text-[10px] sm:text-xs text-gray-500">Consultation Fee</div>
                             </div>
                             {isSelected && (
                               <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                <svg
-                                  className="w-3 h-3 sm:w-4 sm:h-4 text-white"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M5 13l4 4L19 7"
-                                  />
+                                <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
                               </div>
                             )}
@@ -568,18 +427,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
             {step === 2 && (
               <div className="space-y-4 sm:space-y-6">
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-3 sm:p-4 rounded-xl border border-blue-200">
-                  <h3 className="font-semibold text-base sm:text-lg text-gray-900">
-                    {formData.doctorDetails?.name}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    {formData.doctorDetails?.departmentId.name}
-                  </p>
+                  <h3 className="font-semibold text-base sm:text-lg text-gray-900">{formData.doctorDetails?.name}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600">{formData.doctorDetails?.departmentId.name}</p>
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                    Select Date *
-                  </label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Select Date *</label>
                   <input
                     type="date"
                     name="date"
@@ -590,102 +443,48 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                   />
                 </div>
 
-                {isLeaveDay && (
-                  <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-300 text-yellow-700 text-sm">
-                    Doctor is on leave on this day.
-                    {nextAvailableDate && (
-                      <div className="mt-1">
-                        Next available date:{" "}
-                        <button
-                          className="underline font-medium"
-                          onClick={() =>
-                            setFormData({
-                              ...formData,
-                              date: nextAvailableDate,
-                              slot: "",
-                            })
-                          }
-                        >
-                          {nextAvailableDate}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                    Available Time Slots *
-                  </label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Available Time Slots *</label>
                   {formData.date ? (
                     allSlots.length > 0 ? (
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
                         {allSlots.map((slot, i) => {
                           const isBooked = bookedSlots.includes(slot.start);
-                          const isAvailable = slots.some(
-                            (s) => s.start === slot.start,
-                          );
-                          const isSelected =
-                            formData.slot === JSON.stringify(slot);
-
-                          const isDisabled = isLeaveDay || isBooked;
+                          const isAvailable = slots.some((s) => s.start === slot.start);
+                          const isSelected = formData.slot === JSON.stringify(slot);
                           return (
                             <button
                               key={i}
-                              disabled={isDisabled}
                               onClick={() => {
-                                if (!isDisabled) {
-                                  setFormData({
-                                    ...formData,
-                                    slot: JSON.stringify(slot),
-                                  });
+                                if (!isBooked) {
+                                  setFormData({ ...formData, slot: JSON.stringify(slot) });
                                 }
                               }}
-                              className={`px-2 sm:px-4 py-2.5 rounded-lg border-2 font-medium transition text-xs sm:text-sm
-    ${
-      isLeaveDay
-        ? "bg-yellow-50 text-yellow-600 border-yellow-400 cursor-not-allowed"
-        : isBooked
-          ? "bg-red-100 text-red-600 border-red-400 cursor-not-allowed"
-          : isSelected
-            ? "bg-blue-600 text-white border-blue-600"
-            : isAvailable
-              ? "bg-white text-gray-700 border-green-500 hover:bg-green-50"
-              : "bg-white text-gray-700 border-gray-300"
-    }
-  `}
+                              disabled={isBooked}
+                              className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-lg border-2 font-medium transition text-xs sm:text-sm ${
+                                isBooked
+                                  ? "bg-red-50 text-red-400 border-red-300 cursor-not-allowed"
+                                  : isSelected
+                                  ? "bg-blue-600 text-white border-blue-600"
+                                  : isAvailable
+                                  ? "bg-white text-gray-700 border-green-500 hover:bg-green-50"
+                                  : "bg-white text-gray-700 border-gray-300"
+                              }`}
                             >
                               <div className="font-medium">
                                 {slot.start} - {slot.end}
                               </div>
-
-                              {isLeaveDay && (
-                                <div className="text-[10px] mt-1">On Leave</div>
-                              )}
-
-                              {!isLeaveDay && isBooked && (
-                                <div className="text-[10px] mt-1 font-semibold">Booked</div>
-                              )}
+                              {isBooked && <div className="text-[10px] sm:text-xs mt-1">Booked</div>}
                             </button>
                           );
                         })}
-
-
                       </div>
                     ) : (
                       <div className="text-center py-6 sm:py-8 bg-gray-50 rounded-lg">
-                        <p className="text-sm sm:text-base text-gray-600">
-                          No slots configured for this day
-                        </p>
+                        <p className="text-sm sm:text-base text-gray-600">No slots configured for this day</p>
                         {nextAvailableDate && (
                           <button
-                            onClick={() =>
-                              setFormData({
-                                ...formData,
-                                date: nextAvailableDate,
-                                slot: "",
-                              })
-                            }
+                            onClick={() => setFormData({ ...formData, date: nextAvailableDate, slot: "" })}
                             className="block mt-3 mx-auto text-blue-600 hover:text-blue-700 underline font-medium text-xs sm:text-sm"
                           >
                             Select next available date ({nextAvailableDate})
@@ -695,9 +494,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                     )
                   ) : (
                     <div className="text-center py-6 sm:py-8 bg-gray-50 rounded-lg">
-                      <p className="text-sm sm:text-base text-gray-600">
-                        Please select a date first
-                      </p>
+                      <p className="text-sm sm:text-base text-gray-600">Please select a date first</p>
                     </div>
                   )}
                 </div>
@@ -707,9 +504,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
             {step === 3 && (
               <div className="space-y-4 sm:space-y-5">
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                    Patient Name *
-                  </label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Patient Name *</label>
                   <input
                     type="text"
                     name="patientName"
@@ -721,9 +516,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                    Guardian Name
-                  </label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Guardian Name</label>
                   <input
                     type="text"
                     name="guardianName"
@@ -735,9 +528,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                    Phone Number *
-                  </label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
                   <input
                     type="tel"
                     name="phone"
@@ -747,11 +538,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                     placeholder="Enter 10-digit phone number"
                   />
-                  {phoneError && (
-                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">
-                      {phoneError}
-                    </p>
-                  )}
+                  {phoneError && <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">{phoneError}</p>}
                 </div>
               </div>
             )}
